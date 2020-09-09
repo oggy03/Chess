@@ -1,0 +1,25 @@
+1. using (i, j) coordinates where i is row and j is column - as in CS50
+2. white at bottom black at top
+3. wP1-8 left to right or bR2 is rightmost black rook
+4. The methods that find the possible moves for the piece class take the board itself (the 2D array) NOT the board class
+        !! no longer !! this cant work anymore because the get_moves function for king needs access to pieces which are
+        stored within the board class - i have edited it so all functions now take board class as input.
+        ANY FUNCTION THAT NEEDS ACCESS TO BOARD TAKES BOARD OBJECT AS INPUT
+5. pieces are stored in the board class in dictionaries (named 'whites' and 'blacks') of id's (string) mapping to piece
+    objects e.g "wP1" : wP1
+6. part of boards init puts pieces from dicts onto the board
+7. moves in form (id, (i, j))
+8. stack stores moves in form (id, (i,j), (p,q), captured object) where (i,j) is previous position and (p,q)
+    is current position, if no piece captured then None for id of captured
+9. stack stores pawns/rook moves in form (id, (i,j), (p,q), captured object, True/False) where True means first move
+10. when a piece is captured it is removed from whites/blacks dictionary
+11. taken_blacks/whites is a list of all the black/white pieces that have been taken
+12. all moves in board class returns (id, (i, j))
+13. I have given each piece a type eg. wQ1.type = "queen"
+14. assuming white is maximiser so when i do board evaluation : total value of black taken - total value of white taken
+    if white has taken more pieces the value returned will be positive if that make
+15. checkmate returns loser
+16. white maximises black minimises
+17. depth is now input to get_move
+18. stack stores king moves in form (id, (i,j), (p,q), captured object, True/False, True/False) where last item is
+    castling (True or False)
