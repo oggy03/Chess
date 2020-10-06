@@ -1,6 +1,6 @@
 import pygame as p
 from classes import *
-from runner import load_pieces
+from load import load_pieces
 from minimax import *
 import time
 

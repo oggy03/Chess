@@ -1,7 +1,4 @@
-from classes import *
 from minimax import *
-
-depth = 3
 
 
 def load_pieces():
@@ -63,50 +60,3 @@ def load_pieces():
         blacks[piece.id] = piece
 
     return whites, blacks
-
-
-def main():
-    whites, blacks = load_pieces()
-    board = Board(whites, blacks)
-    game_over = False
-
-    # n for keeping track of whose go it is
-    n = 0
-
-    board.print()
-    print()
-
-    while not game_over:
-        # check whose go it is
-        if n % 2 == 0:
-            print("white")
-            id = input("Enter piece id: ")
-            position = input("Enter new position (i,j): ")
-            pos = (int(position[0]), int(position[2]))
-            # id, pos = get_move(board, True, depth)
-            board.push(id, pos)
-
-        else:
-            print("black")
-            move = get_move(board, False, depth)
-            id, pos = move
-            board.push(id, pos)
-        board.print()
-        print()
-        print()
-
-        if board.is_checkmate() == "black":
-            print("WHITE WINS")
-            game_over = True
-        elif board.is_checkmate() == "white":
-            print("BLACK WINS")
-            game_over = True
-        elif board.is_stalemate():
-            print("STALEMATE")
-            game_over = True
-
-        n += 1
-
-
-if __name__ == "__main__":
-    main()

@@ -3,7 +3,6 @@ import sys
 
 check_checked = False
 
-
 # TODO CASTLING, EN PASSANT AND PROMOTIONS
 class Board:
     def __init__(self, w_pieces, b_pieces):
@@ -230,7 +229,6 @@ class Board:
                                     king and bishop versus king
                                     king and knight versus king
                                     king and bishop versus king and bishop with the bishops on the same colour
-
         :return: True or False
         """
         # TODO FIX STALEMATE
@@ -248,6 +246,7 @@ class Board:
         # # check for 3 fold
         # if last_2_moves == fourth_and_third and last_2_moves == fifth_and_fourth:
         #     return True
+
 
         # no legal moves
         if not self.get_all_moves_w() or not self.get_all_moves_b():
@@ -326,22 +325,6 @@ class Board:
             # if pawn's first move set first back to True
             if piece[1] == "P":
                 self.whites[piece].first = prev_move[4]
-
-            # if rook's first move set first back to True
-            elif piece[1] == "R":
-                self.whites[piece].first = prev_move[4]
-
-            # if kings first move set first back to True
-            elif self.whites[piece].type == "king":
-                self.whites[piece].first = prev_move[4]
-                # if castled on last move undo king and rook moves
-                if prev_move[5]:
-                    self.whites["wR2"].position = (7, 7)
-                    self.whites["wK"].position = (7, 4)
-                    self.board[7][7] = self.whites["wR2"]
-                    self.board[7][4] = self.whites["wK"]
-                    self.whites["wR2"].first = True
-
             # return to previous position and update piece class
             self.whites[piece].position = prev_pos
             self.board[i][j] = self.whites[piece]
@@ -361,21 +344,6 @@ class Board:
             # if pawn's first move set first back to True
             if piece[1] == "P":
                 self.blacks[piece].first = prev_move[4]
-            # if rook's first move set first back to True
-            elif piece[1] == "R":
-                self.blacks[piece].first = prev_move[4]
-
-            # if kings first move set first back to True
-            elif self.blacks[piece].type == "king":
-                self.blacks[piece].first = prev_move[4]
-                # if castled on last move undo king and rook moves
-                if prev_move[5]:
-                    self.blacks["bR2"].position = (0, 7)
-                    self.blacks["bK"].position = (0, 4)
-                    self.board[0][7] = self.blacks["bR2"]
-                    self.board[0][4] = self.blacks["bK"]
-                    self.blacks["bR2"].first = True
-
             # return to previous position and update piece class
             self.blacks[piece].position = prev_pos
             self.board[i][j] = self.blacks[piece]
@@ -401,43 +369,16 @@ class Board:
 
         # variable for storing whether its a pawns first move
         pawn_first = False
-        king_first = False
-        rook_first = False
-        castling = False
 
         # if white
         if piece[0] == "w":
 
             # if its a pawn and first move
-            if self.whites[piece].type == "pawn":
+            if piece[1] == "P":
                 if self.whites[piece].first:
                     pawn_first = True
                     # set first move to false
                     self.whites[piece].first = False
-
-            # if its a king and first move
-            if self.whites[piece].type == "king":
-                if self.whites[piece].first:
-                    king_first = True
-                    # set first move to false
-                    self.whites[piece].first = False
-
-            # if its a rook and first move
-            if self.whites[piece].type == "rook":
-                if self.whites[piece].first:
-                    rook_first = True
-                    # set first move to false
-                    self.whites[piece].first = False
-
-            # castling
-            if self.whites[piece].type == "king":
-                if self.whites["wK"].first and move == (7, 6):
-                    # move rook
-                    self.board[7][7] = None
-                    self.whites["wR2"].position = (7, 5)
-                    self.board[7][5] = self.whites["wR2"]
-                    self.whites["wR2"].first = False
-                    castling = True
 
             # remove piece from current position
             i, j = self.whites[piece].position
@@ -462,35 +403,11 @@ class Board:
         else:
 
             # check if its a pawn and first move
-            if self.blacks[piece].type == "pawn":
+            if piece[1] == "P":
                 if self.blacks[piece].first:
                     pawn_first = True
                     # set first move to false
                     self.blacks[piece].first = False
-
-            # if its a king and first move
-            if self.blacks[piece].type == "king":
-                if self.blacks[piece].first:
-                    king_first = True
-                    # set first move to false
-                    self.blacks[piece].first = False
-
-            # if its a rook and first move
-            if self.blacks[piece].type == "rook":
-                if self.blacks[piece].first:
-                    rook_first = True
-                    # set first move to false
-                    self.blacks[piece].first = False
-
-            # castling
-            if self.blacks[piece].type == "king":
-                if self.blacks["bK"].first and move == (0, 6):
-                    # move rook
-                    self.board[0][7] = None
-                    self.blacks["bR2"].position = (0, 5)
-                    self.board[0][5] = self.blacks["bR2"]
-                    self.blacks["bR2"].first = False
-                    castling = True
 
             # remove piece from current position
             i, j = self.blacks[piece].position
@@ -516,14 +433,6 @@ class Board:
         # if it a pawn include whether its first move or not
         if piece[1] == "P":
             self.move_stack.append((piece, (i, j), (p, q), captured, pawn_first))
-            return
-        # if king include first move or not
-        elif piece[1] == "K" and len(piece) == 2:
-            self.move_stack.append((piece, (i, j), (p, q), captured, king_first, castling))
-            return
-        # if rook include first move or not
-        elif piece[1] == "R":
-            self.move_stack.append((piece, (i, j), (p, q), captured, rook_first))
             return
 
         self.move_stack.append((piece, (i, j), (p, q), captured))
@@ -953,7 +862,6 @@ class King(Piece):
     def __init__(self, state, position, id, colour):
         super().__init__(state, position, id, colour)
         self.type = "king"
-        self.first = True
 
     def get_moves(self, board_object):
         """
@@ -969,78 +877,17 @@ class King(Piece):
         pos_moves = [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1), (i + 1, j + 1), (i - 1, j - 1), (i + 1, j - 1),
                      (i - 1, j + 1)]
 
-        # TODO CHECK CASTLING
-        castling = True
-        if self.colour == "white":
-            # get opposite colour's king object and determine colour for castling
-            other_king = board_object.blacks["bK"]
-
-            # get rook objects if they are still on the board
-            try:
-                rook1 = board_object.whites['wR1']
-                rook2 = board_object.whites['wR2']
-            except:
-                castling = False
-            if castling:
-                # If it is the king and rook's first move does the necessary checks for castling
-                if self.first and rook2.first:
-
-                    # Check if the square are empty, the square are not vulnerable and the king is not in check
-                    if board_object.board[i][j + 1] is None and board_object.board[i][j + 2] is None:
-                        can_take1, taking_pieces = board_object.can_be_eaten_w((i, j + 1))
-                        can_take2, taking_pieces = board_object.can_be_eaten_w((i, j + 2))
-                        # Check this line please
-                        if (not (can_take1 and can_take2)) and not board_object.check(self.position):
-                            pos_moves.append((i, j + 2))
-
-                if self.first and rook1.first:
-
-                    # Check if the square are empty, the square are not vulnerable and the king is not in check
-                    if board_object.board[i][j - 1] is None and board_object.board[i][j - 2] is None and \
-                            board_object.board[i][j - 3] is None:
-                        can_take1, taking_pieces = board_object.can_be_eaten_w((i, j - 1))
-                        can_take2, taking_pieces = board_object.can_be_eaten_w((i, j - 2))
-                        can_take3, taking_pieces = board_object.can_be_eaten_w((i, j - 3))
-                        # Check this line please
-                        if (not (can_take1 and can_take2 and can_take3)) and not board_object.check(self.position):
-                            pos_moves.append((i, j - 2))
-
-        else:
-            # get opposite colour's king object and determine colour for castling
-            other_king = board_object.whites["wK"]
-            try:
-                rook1 = board_object.blacks['bR1']
-                rook2 = board_object.blacks['bR2']
-            except:
-                castling = False
-
-            if castling:
-                # If it is the king and rook's first move does the necessary checks for castling
-                if self.first and rook2.first:
-
-                    # Check if the square are empty, the square are not vulnerable and the king is not in check
-                    if board_object.board[i][j + 1] is None and board_object.board[i][j + 2] is None:
-                        can_take1, taking_pieces = board_object.can_be_eaten_b((i, j + 1))
-                        can_take2, taking_pieces = board_object.can_be_eaten_b((i, j + 2))
-                        # Check this line please
-                        if (not (can_take1 and can_take2)) and not board_object.check(self.position):
-                            pos_moves.append((i, j + 2))
-
-                if self.first and rook1.first:
-
-                    # Check if the square are empty, the square are not vulnerable and the king is not in check
-                    if board_object.board[i][j - 1] is None and board_object.board[i][j - 2] is None and \
-                            board_object.board[i][j - 3] is None:
-                        can_take1, taking_pieces = board_object.can_be_eaten_b((i, j - 1))
-                        can_take2, taking_pieces = board_object.can_be_eaten_b((i, j - 2))
-                        can_take3, taking_pieces = board_object.can_be_eaten_b((i, j - 3))
-                        # Check this line please
-                        if (not (can_take1 and can_take2 and can_take3)) and not board_object.check(self.position):
-                            pos_moves.append((i, j - 2))
-
         pos_moves = self.remove_moves(pos_moves, board_object)
 
         to_remove = list()
+
+        if self.colour == "white":
+            # get opposite colour's king object
+            other_king = board_object.blacks["bK"]
+
+        else:
+            # get opposite colour's king object
+            other_king = board_object.whites["wK"]
 
         # find position
         other_i, other_j = other_king.position
@@ -1093,7 +940,6 @@ class Rook(Piece):
     def __init__(self, state, position, id, colour):
         super().__init__(state, position, id, colour)
         self.type = "rook"
-        self.first = True
 
     def get_moves(self, board_object):
         """
