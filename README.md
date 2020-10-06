@@ -1,7 +1,7 @@
 #Chess
 This is a chess engine I have written in python using a depth limited minimax algorithm. 
 
-RUNNING
+RUNNING:
 To run the program run the script callled gui.py
 
 PLAYING INSTRUCTIONS:
